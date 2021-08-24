@@ -1,0 +1,35 @@
+﻿@model IEnumerable<ProjectManagmentPin.Data.EmployeeProject>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Employee)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Project)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Employee.FirstName)
+                @Html.DisplayFor(modelItem => item.Employee.LastName)
+
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Project.ProjectName)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

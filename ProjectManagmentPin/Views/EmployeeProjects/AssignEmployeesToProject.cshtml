@@ -1,0 +1,124 @@
+﻿@model ProjectManagmentPin.Models.EmployeesOnProjectsViewModel
+
+@{
+    ViewData["Title"] = "Employee assigment";
+}
+
+<h4>Employee assigment</h4>
+
+
+<div class="row">
+    <div class="col-12">
+        @{
+
+            var projectList = new List<SelectListItem>();
+
+            foreach (var pro in Model.Projects)
+            {
+                projectList.Add(new SelectListItem
+                {
+                    Text = pro.ProjectName,
+                    Value = pro.ProjectId.ToString()
+                });
+            }
+        }
+        @Html.DropDownListFor(m => m.Projects, projectList, "Please select a project")
+        <p>
+            &nbsp;
+        </p>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-12">
+
+        @{
+
+            var employeeList = new List<SelectListItem>();
+
+            foreach (var emp in Model.Employees)
+            {
+                employeeList.Add(new SelectListItem
+                {
+                    Text = emp.FirstAndLastName,
+                    Value = (emp.EmployeeId.ToString(), emp.FirstAndLastName).ToString()
+                });
+            }
+        }
+
+       @Html.ListBox("Employees", employeeList)
+        <button id="Employee" onclick="insertEmployee()">+</button>
+    </div>
+
+</div>
+
+
+<div class="row">
+    <div class="col-12">
+        <p>
+            &nbsp;
+        </p>
+        <textarea style="width:500px; height:500px; resize:none" id="SelectedEmployees" readonly>
+            </textarea>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <p>
+            &nbsp;
+        </p>
+        <button id="sub" onclick="SubmitData()">Insert</button>
+    </div>
+</div>
+
+
+<script>
+    var selectedEmployes = [];
+
+    function insertEmployee() {
+        var Employeid = '@Html.IdFor( o => o.Employees)';
+        var dropdown = $("#" + Employeid);
+        var value = dropdown.val().toString();
+        var id = value.substring(value.indexOf('(')+1, value.lastIndexOf(','));
+        var name = value.substring(value.indexOf(',') + 2, value.lastIndexOf(')'));
+
+        if (selectedEmployes.indexOf(id) == -1) {
+            selectedEmployes.push(id);
+            console.log(id);
+            console.log(name);
+            var textBox = document.getElementById('SelectedEmployees');
+            if (textBox.value.length == 0) {
+                textBox.value += name;
+            }
+            else {
+                textBox.value += "\r\n"+name;
+            }
+        }
+        console.log(value);
+    }
+
+    function SubmitData() {
+        var url = '@Url.Action("Insert", "EmployeeProjects")'; //gives an url to action on controller
+        var ProjectId = '@Html.IdFor( o => o.Projects)';
+        var dropdownProj = $("#" + ProjectId);
+        var value = dropdownProj.val();
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                emp: selectedEmployes,
+                proj: value
+            },
+            contentType: "application/x-www-form-urlencoded",
+            dataType: "json",
+            success: function (msg) {
+                window.location.href = '@Url.Action("Index", "EmployeeProjects")';
+                }
+        });
+    }
+
+
+</script>
+
